@@ -81,7 +81,7 @@ fn main() {
             })
     }
 
-    if args.verbose && seen.is_empty() {
+    if (args.verbose || args.what_if) && seen.is_empty() {
         println!("None");
     }
 }

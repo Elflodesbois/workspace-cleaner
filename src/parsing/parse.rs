@@ -64,6 +64,18 @@ fn get_filter_from_table(t: &Table) -> Box<dyn Fn(&DirEntry) -> bool> {
             }
         }
 
+        if let Some(_) = value.get(IF) {
+            let if_filter = build_if_filter(
+                value
+                    .get(IF)
+                    .unwrap()
+                    .as_table()
+                    .expect("Expected table value for 'if'"),
+            );
+            acc.push(if_filter);
+            continue;
+        }
+
         for value_key in &value_keys {
             match value_key.as_str() {
                 FILE_EXISTS => acc.push(Box::new(|file| file.path().is_file())),
@@ -86,6 +98,7 @@ fn get_filter_from_table(t: &Table) -> Box<dyn Fn(&DirEntry) -> bool> {
                     }))
                 }
                 FILE_MASK => {
+                    println!("{}: {}", value_key, value.get(value_key).unwrap());
                     let pattern = get_regex(
                         value
                             .get(value_key)
@@ -102,22 +115,18 @@ fn get_filter_from_table(t: &Table) -> Box<dyn Fn(&DirEntry) -> bool> {
                             .unwrap_or(false)
                     }))
                 }
-                IF => {
-                    let if_filter = build_if_filter(
-                        value
-                            .get(IF)
-                            .unwrap()
-                            .as_table()
-                            .expect("Expected table value for 'if'"),
-                    );
-                    acc.push(if_filter);
-                }
+                IF => {}
                 DISABLED => {}
                 _ => {}
             }
         }
     }
-    Box::new(move |file: &DirEntry| acc.iter().map(|filter| filter(file)).all(|b| b))
+    Box::new(
+        move |file: &DirEntry| acc.iter().map(
+            |filter| filter(file)
+        ).any(
+            |b| b)
+    )
 }
 
 fn build_if_filter(if_table: &Table) -> Box<dyn Fn(&DirEntry) -> bool> {
