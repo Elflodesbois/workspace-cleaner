@@ -2,5 +2,14 @@
 name = "workspace-cleaner"
 version = "0.1.0"
 edition = "2024"
+authors = ["Elflo"]
+
+#[[bin]]
+#name = "parse"
+#path = "src/parsing/parse.rs"
 
 [dependencies]
+walkdir = "2.5.0"
+regex = "1.12.3"
+toml = "1.1.2"
+clap = { version = "4.5.32", features = ["derive"] }
