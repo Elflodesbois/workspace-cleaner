@@ -1,20 +1,25 @@
+use crate::parsing::get_filter;
+use clap::Parser;
+use parsing::load_file_as_sections;
 use std::env;
 use std::fs::remove_file;
-use clap::Parser;
 use walkdir::WalkDir;
-use parsing::load_file_as_sections;
-use crate::parsing::get_filter;
 
 mod parsing;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
-struct Args {
+pub(crate) struct Args {
     #[clap(long = "what-if", action, required = false, default_value_t = false)]
     /// Show the result of the command if it was performed
     what_if: bool,
 
-    #[clap(long = "verbose", short = 'v', required = false, default_value_t = false)]
+    #[clap(
+        long = "verbose",
+        short = 'v',
+        required = false,
+        default_value_t = false
+    )]
     /// Show more information
     verbose: bool,
 }
@@ -39,7 +44,9 @@ fn main() {
             .for_each(|e| {
                 let path = e.path().display().to_string();
 
-                if seen.contains(&path) { return; }
+                if seen.contains(&path) {
+                    return;
+                }
 
                 if args.what_if || args.verbose {
                     println!("{}", e.path().display());
@@ -48,9 +55,10 @@ fn main() {
                 seen.push(path);
 
                 if !args.what_if {
-                    remove_file(e.path()).unwrap_or_else(|err| {eprintln!("Couldn't delete {}: {}", e.path().display(), err);});
+                    remove_file(e.path()).unwrap_or_else(|err| {
+                        eprintln!("Couldn't delete {}: {}", e.path().display(), err);
+                    });
                 }
-
             })
     }
 }

@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use std::fs;
 use toml::{Table, Value};
 use walkdir::DirEntry;
-use walkdir::WalkDir;
 
 const DISABLED: &str = "disabled";
 const EXT_MASK: &str = "ext_mask";
@@ -46,7 +45,6 @@ fn get_filter_from_table(t: &Table) -> Box<dyn Fn(&DirEntry) -> bool> {
             .as_bool()
             .expect("Boolean value for disabled is invalid")
         {
-            //println!("Disabled at root");
             return Box::new(|_: &DirEntry| false);
         }
     }
@@ -55,30 +53,29 @@ fn get_filter_from_table(t: &Table) -> Box<dyn Fn(&DirEntry) -> bool> {
 
     for key in t.keys() {
         let value = t.get(key).unwrap();
-        let value_keys = value.as_table().unwrap().keys();
+        let value_keys: Vec<String> = value.as_table().unwrap().keys().cloned().collect();
 
         if let Some(disabled) = value.get(DISABLED) {
             if disabled
                 .as_bool()
                 .expect("Boolean value for disabled is invalid")
             {
-                //println!("Disabled entry");
                 continue;
             }
         }
 
-        for value_key in value_keys {
-            //println!("{}: {}", value_key, value.get(value_key).unwrap());
-
+        for value_key in &value_keys {
             match value_key.as_str() {
                 FILE_EXISTS => acc.push(Box::new(|file| file.path().is_file())),
                 DIR_EXISTS => acc.push(Box::new(|dir| dir.path().is_dir())),
                 EXT_MASK => {
                     let pattern = get_regex(
-                        value.get(value_key).unwrap()
+                        value
+                            .get(value_key)
+                            .unwrap()
                             .as_str()
                             .expect("Expected string value for mask")
-                            .to_string()
+                            .to_string(),
                     );
                     acc.push(Box::new(move |file| {
                         file.path()
@@ -90,10 +87,12 @@ fn get_filter_from_table(t: &Table) -> Box<dyn Fn(&DirEntry) -> bool> {
                 }
                 FILE_MASK => {
                     let pattern = get_regex(
-                        value.get(value_key).unwrap()
+                        value
+                            .get(value_key)
+                            .unwrap()
                             .as_str()
                             .expect("Expected string value for mask")
-                            .to_string()
+                            .to_string(),
                     );
                     acc.push(Box::new(move |file| {
                         file.path()
@@ -104,37 +103,71 @@ fn get_filter_from_table(t: &Table) -> Box<dyn Fn(&DirEntry) -> bool> {
                     }))
                 }
                 IF => {
-                    //eprintln!("Ignoring if option")
+                    let if_filter = build_if_filter(
+                        value
+                            .get(IF)
+                            .unwrap()
+                            .as_table()
+                            .expect("Expected table value for 'if'"),
+                    );
+                    acc.push(if_filter);
                 }
                 DISABLED => {}
-                _ => {
-                    //eprintln!("Ignoring unknown option {}", key)
-                }
+                _ => {}
             }
         }
     }
-    //println!("{} sub filters", acc.len());
     Box::new(move |file: &DirEntry| acc.iter().map(|filter| filter(file)).all(|b| b))
+}
+
+fn build_if_filter(if_table: &Table) -> Box<dyn Fn(&DirEntry) -> bool> {
+    if let Some(pattern_val) = if_table.get(FILE_EXISTS) {
+        let pattern = pattern_val
+            .as_str()
+            .expect("Expected string value for 'if.file_exists'")
+            .to_string();
+
+        Box::new(move |entry: &DirEntry| {
+            let resolved = resolve_pattern(&pattern, entry);
+            entry
+                .path()
+                .parent()
+                .map(|parent| parent.join(&resolved).is_file())
+                .unwrap_or(false)
+        })
+    } else if let Some(pattern_val) = if_table.get(DIR_EXISTS) {
+        let pattern = pattern_val
+            .as_str()
+            .expect("Expected string value for 'if.dir_exists'")
+            .to_string();
+
+        Box::new(move |entry: &DirEntry| {
+            let resolved = resolve_pattern(&pattern, entry);
+            entry
+                .path()
+                .parent()
+                .map(|parent| parent.join(&resolved).is_dir())
+                .unwrap_or(false)
+        })
+    } else {
+        panic!("'if' block must contain either 'file_exists' or 'dir_exists'");
+    }
+}
+
+fn resolve_pattern(pattern: &str, entry: &DirEntry) -> String {
+    if !pattern.contains("{}") {
+        return pattern.to_string();
+    }
+
+    let stem = entry
+        .path()
+        .file_stem()
+        .and_then(|s| s.to_str())
+        .unwrap_or("");
+
+    pattern.replace("{}", stem)
 }
 
 fn get_regex(val: String) -> Regex {
     Regex::new(format!("^{}$", val).as_str()).expect("Regex is malformed")
 }
-
-/*fn main() {
-    std::env::set_current_dir("./test-wk").unwrap();
-
-    let toml_content = load_file_as_sections();
-
-    let filter = get_filter_from_raw_section(toml_content.get("c").unwrap());
-
-    println!();
-
-    WalkDir::new(".")
-        .into_iter()
-        .filter_map(|e| e.ok())
-        .filter(filter)
-        .for_each(|entry| {
-            println!("{}", entry.path().display());
-        });
-}*/
