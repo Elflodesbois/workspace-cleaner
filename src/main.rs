@@ -2,10 +2,9 @@ use crate::init::init;
 use crate::parsing::get_filter;
 use clap::Parser;
 use parsing::load_file_as_sections;
-use std::env;
 use std::fs::remove_file;
-use std::io::Write;
 use std::io::stdout;
+use std::io::Write;
 use std::process::exit;
 use walkdir::WalkDir;
 
@@ -34,8 +33,6 @@ struct Args {
 }
 
 fn main() {
-    env::set_current_dir("./test-wk").unwrap();
-
     let args = Args::parse();
 
     if args.init {
