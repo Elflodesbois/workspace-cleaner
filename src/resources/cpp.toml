@@ -1,0 +1,9 @@
+[cpp]
+compiled_files_linux = { file_mask = "[^\\.]*", if = { file_exists = "{}.cpp" } }
+compiled_files_windows = { file_mask = ".*\\.exe", if = { file_exists = "{}.cpp" } }
+object_files = { file_mask = ".*\\.o", if = { file_exists = "CMakeLists.txt" } }
+static_libs = { file_mask = ".*\\.a", if = { file_exists = "CMakeLists.txt" } }
+shared_libs = { file_mask = ".*\\.so", if = { file_exists = "CMakeLists.txt" } }
+cmake_cache = { file_mask = "CMakeCache\\.txt", if = { file_exists = "CMakeLists.txt" } }
+cmake_files_dir = { file_mask = "CMakeFiles", if = { file_exists = "CMakeLists.txt" } }
+build_dir = { file_mask = "build", if = { file_exists = "CMakeLists.txt" } }

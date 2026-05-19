@@ -1,0 +1,10 @@
+[python]
+pycache_dir = { file_mask = "__pycache__", if = { file_exists = ".*\\.py" } }
+pyc_files = { file_mask = ".*\\.pyc", if = { file_exists = ".*\\.py" } }
+pyo_files = { file_mask = ".*\\.pyo", if = { file_exists = ".*\\.py" } }
+venv_dir = { file_mask = "\\.venv|venv|env", if = { file_exists = "requirements\\.txt" } }
+dist_dir = { file_mask = "dist", if = { file_exists = "setup\\.py" } }
+build_dir = { file_mask = "build", if = { file_exists = "setup\\.py" } }
+egg_info = { file_mask = ".*\\.egg-info", if = { file_exists = "setup\\.py" } }
+pytest_cache = { file_mask = "\\.pytest_cache", if = { file_exists = "pytest\\.ini" } }
+mypy_cache = { file_mask = "\\.mypy_cache", if = { file_exists = ".*\\.py" } }

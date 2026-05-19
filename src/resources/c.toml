@@ -1,0 +1,5 @@
+[c]
+compiled_files_linux = { file_mask = "[^\\.]*", if = { file_exists = "{}.c" } }
+compiled_files_windows = { file_mask = ".*\\.exe", if = { file_exists = "{}.c" } }
+object_files = { file_mask = ".*\\.o", if = { file_exists = "{}.c" } }
+static_libs = { file_mask = ".*\\.a", if = { file_exists = "{}.c" } }

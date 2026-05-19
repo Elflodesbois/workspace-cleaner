@@ -1,0 +1,6 @@
+[ruby]
+bundle_dir = { file_mask = "\\.bundle", if = { file_exists = "Gemfile" } }
+vendor_bundle = { file_mask = "vendor", if = { file_exists = "Gemfile\\.lock" } }
+tmp_dir = { file_mask = "tmp", if = { file_exists = "Gemfile" } }
+log_dir = { file_mask = "log", if = { file_exists = "Gemfile" } }
+gem_files = { file_mask = ".*\\.gem", if = { file_exists = ".*\\.gemspec" } }

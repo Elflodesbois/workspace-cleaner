@@ -1,0 +1,5 @@
+[php]
+vendor_dir = { file_mask = "vendor", if = { file_exists = "composer\\.json" } }
+cache_dir = { file_mask = "cache", if = { file_exists = "composer\\.json" } }
+laravel_cache = { file_mask = "bootstrap/cache", if = { file_exists = "artisan" } }
+storage_logs = { file_mask = "storage/logs", if = { file_exists = "artisan" } }

@@ -1,0 +1,5 @@
+[go]
+bin_dir = { file_mask = "bin", if = { file_exists = "go.mod" } }
+dist_dir = { file_mask = "dist", if = { file_exists = "go.mod" } }
+compiled_files_linux = { file_mask = "[^\\.]*", if = { file_exists = "go.mod" } }
+compiled_files_windows = { file_mask = ".*\\.exe", if = { file_exists = "go.mod" } }

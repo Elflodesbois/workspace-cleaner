@@ -1,0 +1,4 @@
+[swift]
+build_dir = { file_mask = "\\.build", if = { file_exists = "Package\\.swift" } }
+derived_data = { file_mask = "DerivedData", if = { file_exists = ".*\\.xcodeproj" } }
+xcuserdata = { file_mask = ".*\\.xcuserdata", if = { file_exists = ".*\\.xcodeproj" } }

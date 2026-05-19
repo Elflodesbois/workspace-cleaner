@@ -1,0 +1,2 @@
+[rust]
+target_dir = { file_mask = "target", if = { file_exists = "Cargo.toml" } }

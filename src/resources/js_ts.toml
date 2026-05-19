@@ -1,0 +1,9 @@
+[javascript_typescript]
+node_modules = { file_mask = "node_modules", if = { file_exists = "package\\.json" } }
+dist_dir = { file_mask = "dist", if = { file_exists = "package\\.json" } }
+build_dir = { file_mask = "build", if = { file_exists = "package\\.json" } }
+next_dir = { file_mask = "\\.next", if = { file_exists = "next\\.config\\.(js|ts)" } }
+nuxt_dir = { file_mask = "\\.nuxt", if = { file_exists = "nuxt\\.config\\.(js|ts)" } }
+cache_dir = { file_mask = "\\.cache", if = { file_exists = "package\\.json" } }
+ts_buildinfo = { file_mask = ".*\\.tsbuildinfo", if = { file_exists = "tsconfig\\.json" } }
+coverage_dir = { file_mask = "coverage", if = { file_exists = "package\\.json" } }

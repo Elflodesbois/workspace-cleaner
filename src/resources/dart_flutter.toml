@@ -1,0 +1,5 @@
+[dart_flutter]
+dart_tool = { file_mask = "\\.dart_tool", if = { file_exists = "pubspec\\.yaml" } }
+build_dir = { file_mask = "build", if = { file_exists = "pubspec\\.yaml" } }
+flutter_plugins = { file_mask = "\\.flutter-plugins", if = { file_exists = "pubspec\\.yaml" } }
+flutter_plugins_deps = { file_mask = "\\.flutter-plugins-dependencies", if = { file_exists = "pubspec\\.yaml" } }

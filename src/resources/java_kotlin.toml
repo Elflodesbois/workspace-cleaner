@@ -1,0 +1,7 @@
+[java_kotlin]
+maven_target = { file_mask = "target", if = { file_exists = "pom\\.xml" } }
+gradle_build = { file_mask = "build", if = { file_exists = "build\\.gradle" } }
+gradle_dir = { file_mask = "\\.gradle", if = { file_exists = "build\\.gradle" } }
+class_files = { file_mask = ".*\\.class", if = { file_exists = "pom\\.xml" } }
+jar_files = { file_mask = ".*\\.jar", if = { file_exists = "pom\\.xml" } }
+war_files = { file_mask = ".*\\.war", if = { file_exists = "pom\\.xml" } }

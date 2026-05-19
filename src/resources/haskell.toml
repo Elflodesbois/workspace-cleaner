@@ -1,0 +1,5 @@
+[haskell]
+stack_work = { file_mask = "\\.stack-work", if = { file_exists = "stack\\.yaml" } }
+dist_dir = { file_mask = "dist", if = { file_exists = ".*\\.cabal" } }
+dist_newstyle = { file_mask = "dist-newstyle", if = { file_exists = ".*\\.cabal" } }
+cabal_dir = { file_mask = "\\.cabal", if = { file_exists = ".*\\.cabal" } }
